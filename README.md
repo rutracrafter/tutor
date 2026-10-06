@@ -220,3 +220,285 @@ continuity lives in the files.
   have already shown; two genuine attempts come before any solution.
 - **There is no score.** Results read solid, shaky or gap, each with its next action. The
   numbers exist inside the model to pick your next question.
+
+---
+
+## Manual
+
+### Commands
+
+| Command | Length | What it does |
+| --- | --- | --- |
+| `/setup` | 3 min, once | Links the engine to a data folder. Creates the skeleton, fills your profile, writes `CLAUDE.local.md` and `.claude/settings.local.json`, detects or creates the git repo. Rerun to switch folders. |
+| `/diagnose <topic>` | 20–30 min, once per topic | Has the cartographer draft the concept graph, then places you on it with 8–15 adaptive questions, each with a confidence rating. Run before the first `/learn` on a new subject. |
+| `/learn <topic> [30m]` | Your budget, usually 30–60 min | A normal study session in five timed phases. |
+| `/review [domain]` | 10–15 min | Due reviews from memory plus one explain-it-simply item. No new material. |
+| `/quiz [topic]` | 15–30 min | 5–8 items on a cluster, no help during, then a correction round. |
+| `/exam [domain]` | 30–45 min | 8–15 cumulative items at a milestone, every 4–6 sessions in a domain. |
+| `/project [slug]` | Open | Checks readiness and proposes a project, or continues one with a milestone review. |
+| `/wrap` | 2–5 min | Closes the session: summary, evidence, carry-over, maps, commit. Works at any moment. |
+| `/reorganize <domain>` | 10 min | Splits a domain that has grown broad into nested sub-tags. |
+
+`visualize` is a skill the tutor uses rather than one you call, but asking for "a diagram of
+this" invokes the same rules.
+
+### Session types and time budgets
+
+Give a budget (`/learn rust 30m`, or `45`, or `1h`) or let it use `session_default_min`
+from your profile. The tutor takes the start time from the system clock and checks it again
+at every phase boundary — the timing is measured, not estimated.
+
+| Phase | Share of budget | What happens |
+| --- | --- | --- |
+| Warm-up retrieval | ~15% | Due reviews, produced from memory. Never cut. |
+| New idea | ~25% | A prediction question first, then the explanation in chunks, each followed by an explain-back. |
+| Guided practice | ~35% | Worked or partly worked examples fading to full problems. |
+| Independent practice | ~15% | No scaffolding, a new context, older concepts mixed in. |
+| Wrap-up | ~10% | Explain-it-simply, then your own summary. Never cut. |
+
+Running late, it cuts new material first. With about five minutes left it moves to the
+wrap-up wherever it is. Under 20 minutes it suggests `/review` instead. A concept new to
+you tilts time toward the explanation; one you partly know tilts it toward practice.
+
+**One learning session is one Claude Code session.** Run `claude` fresh each time, or
+`/clear`. All continuity lives in the files — your profile, the index, the maps and the
+last session's summary — so a fresh context stays cheap and avoids drift from a long chat.
+If a long session fills up, Claude Code compacts it and the note is unaffected.
+
+### Steering
+
+The tutor proposes a plan at the start and adds a checkpoint after each phase. **Leaving
+everything unticked means continue** — silence is consent, not a question to answer.
+
+| What you ask | What happens |
+| --- | --- |
+| "More practice on X" | Always granted. |
+| "Go deeper on Y" | Granted if you hold Y's prerequisites. Otherwise it shows what is missing and offers a short detour. |
+| "Skip this, I know it" | Two quick check items. Pass and it is skipped, with credit recorded. |
+| A tangent | Parked in `## Parking lot` and offered again at wrap-up, or added to the graph. |
+| "Shorter" / "more detail" | Treated as a standing preference and written into your profile. |
+
+To redirect mid-phase, write a `> [!steer]` callout anywhere in the note and press Enter.
+
+**Handing the turn back.** Enter on an empty line, or a single `.`, means "read the note".
+Type more and it gets sorted: an answer is copied word for word into the slot and marked
+`(typed in terminal)`, a steering request is logged under the current checkpoint, a
+question is answered in the note. Nothing you type is paraphrased or lost.
+
+### Genuine attempts and the hint ladder
+
+No solution before **two genuine attempts**. An attempt is genuine if it contains at least
+one of: a committed answer even if wrong, a step of work or a named rule you think applies,
+or a specific point of confusion ("I see why X, but not why Y"). The tutor judges content,
+never length or the time you took.
+
+Not genuine: a blank, "idk", restating the question, or a bare guess where reasoning was
+asked for. An honest "I don't know where to start" **is** fine and is not penalised — it
+earns a smaller sub-question rather than a hint.
+
+| Rung | What you get |
+| --- | --- |
+| 1 | "What have you tried so far?" |
+| 2 | Restate the goal and what you already know |
+| 3 | A conceptual nudge — the principle, no steps |
+| 4 | The very next step, and no further |
+| 5 | A different problem with the same structure, worked fully |
+| 6 | The solution step by step, with you explaining each step back |
+
+One rung per turn, with a genuine attempt between rungs. Each rung used costs 0.25 of that
+item's credit. Rung 6 counts as a miss and queues a similar item for later.
+
+Several non-attempts in a row stops the lesson for a check-in: whether the level is wrong
+or you are tired, with an easier level, a break or `/wrap` on offer.
+
+### Assessments and projects
+
+Assessments are learning events. Feedback leads with what you understood, then **one** gap,
+then a correction round where fixing a miss yourself earns half credit — and only then a
+model solution, which you explain back. Moving a quiz is free and never lowers mastery.
+There are no retakes of the same paper; misses return later as review items in new forms.
+
+| Kind | When | Size | Help | Weight |
+| --- | --- | --- | --- | --- |
+| Check for understanding | Every few minutes in a lesson | 1 item | Hint ladder | Half |
+| Quiz | End of a cluster, or a review day | 5–8 items | None | Full |
+| Exam | Milestone, every 4–6 sessions in a domain | 8–15 cumulative | None | Full, plus transfer |
+| Project | When a cluster is ready | Milestones over 1+ sessions | Questions, design review | Strongest transfer evidence |
+
+**Projects.** A cluster is ready when at least 80% of it is `practicing` or better with
+mastery ≥ 0.7 **and** you have passed a transfer item in it. The tutor tells you at a
+checkpoint; you can accept, swap in your own idea, or put it off. Scope scales with level:
+beginner is 1–3 sessions with a written spec, intermediate is 3–8 sessions with
+requirements only, advanced is open-ended with you defining the problem.
+
+A project lives in `Projects/<slug>/` with `brief.md`, `log.md` and your work files. **The
+tutor never writes your code or prose.** It may read your code, run it, run your tests,
+create empty stubs or failing tests, and review your design with questions.
+
+### The graph, maps and domains
+
+One graph for everything you learn: one note per concept in `Concepts/<id>.md`, where the
+ID is the filename. Prerequisites may cross domains, so the statistics you hold counts
+toward the machine learning you start — `logistic-regression` requires
+`maximum-likelihood-estimation` whatever each is tagged.
+
+**Domains are tags, not folders.** Nested: `math`, then `math/probability` when it earns
+the split. A concept carries several tags where it genuinely belongs to several fields. A
+filename never contains a domain, so splitting one is a re-tag — nothing moves and no link
+breaks. `/reorganize` does it at about 60 concepts, or sooner if you start focusing on one
+part.
+
+**The frontier** is recomputed at every `/wrap`. A concept joins it once every prerequisite
+is `practicing` or better with mastery ≥ 0.6 — full mastery is deliberately not required,
+or progress would stall. When the frontier runs dry the cartographer extends the graph one
+layer, guided by your goals. A goal can also pull it forward: "I want to understand
+transformers" has it draft a path backwards from there to what you already hold.
+
+**Maps.** `/wrap` regenerates `Maps/<domain>.md`: a Mermaid graph coloured by stage with
+the frontier outlined. Large domains show the frontier and the concepts around it, capped
+at 40 nodes; Obsidian's graph view of `Concepts/` shows everything.
+
+**Mastery.**
+
+| Rule | Value |
+| --- | --- |
+| After a graded item | Mastery moves 30% of the way toward the item's score (1, 0.5 or 0), minus 0.25 per hint level |
+| A check inside a lesson | Half weight |
+| `mastered` | Mastery ≥ 0.85, at least 3 observations across 2 sessions, including a transfer item or project milestone |
+| Review intervals | 1, 3, 7, 16, 35 days, then doubling. A miss resets to 1 day |
+| A correct answer | Also pushes each direct prerequisite's next review half an interval later |
+
+Mastery is revocable: if it falls below 0.85 the concept returns to `practicing`.
+
+### Profile settings and their defaults
+
+In `Learner/profile.md`. Each is one line, so changing one is cheap.
+
+| Setting | Default | What the alternative costs |
+| --- | --- | --- |
+| `verbosity` | `standard` | `brief` gives clipped, note-style replies — good once you know a subject, thin while you are learning it |
+| `show_scores` | `false` | `true` shows raw mastery numbers instead of solid / shaky / gap |
+| `session_default_min` | `45` | Used when `/learn` is given no budget |
+| `hard_lock_closed_notes` | `false` | `true` makes closed notes read-only on disk; some sync services cope badly |
+| `submit_watcher` | `false` | `true` lets you hand the turn back by ticking a box in Obsidian (see below) |
+| `timezone` | your zone | Used for the clock checks and dated filenames |
+
+Your goals, background, preferences and constraints live in the same file as prose. The
+tutor reads it whole at the start of every session, so keep it short.
+
+**Other defaults**, set in the agent prompts and `scripts/tutor.py` rather than the
+profile: the success band is 70–90% aiming for 80–85%; the frontier unlocks at prerequisite
+mastery 0.6; project readiness is 80% of a cluster at 0.7 plus a transfer pass; a domain
+splits at about 60 concepts. The model mix is Opus for the tutor, Sonnet for the examiner
+and cartographer, Haiku for the scribe — all on your subscription's limits, which is why
+only the teaching runs on the strongest model.
+
+### History, git and editing your own notes
+
+**You can edit anything.** It is your notebook, and locking you out would mean fighting
+your editor. Three things keep the record trustworthy anyway:
+
+1. **The model never re-reads old answers as evidence.** Each grade is written to the
+   concept's log when it is given, and mastery comes only from those log lines. Improving
+   an answer afterwards cannot change what the record says you knew.
+2. **Revise below, don't overwrite.** To improve an answer during a session, add a line
+   starting with `Revised:` under the original. It is graded as a new attempt, which is
+   better practice than silently fixing the first one.
+3. **Changes after closing are visible.** `/wrap` commits the data folder, so a later edit
+   to a closed note shows in the diff, and `/learn` warns you about it.
+
+**What is enforced in code**, not just asked for: `/wrap` marks notes `status: closed`, and
+a hook script runs before every Write and Edit and blocks any change to a closed note. The
+agent sees why it was blocked and cannot route around it. Concept logs are append-only; a
+regrade is a new line.
+
+**Git.** `/wrap` commits only paths under your data folder, with messages prefixed
+`tutor:`. It never pushes, rebases or touches anything else. If your vault is already a git
+repo it commits there; otherwise `/setup` offers `git init`. If another tool holds git's
+lock — the Obsidian Git plugin syncing at that moment is the usual cause — it retries once
+and then tells you; your notes are safe either way and the next wrap includes them.
+
+Turn commits off by setting `Git repo: none` in `CLAUDE.local.md`. You lose the visible
+edit trail.
+
+### The bookkeeping script
+
+`scripts/tutor.py` does everything deterministic — no model involved, so it is faster,
+cheaper and cannot hallucinate a due date. Python 3.8+, standard library only. Without
+Python the scribe agent does the same work from the same rules.
+
+```bash
+python3 scripts/tutor.py due --limit 15 [--domain math] [--json]
+python3 scripts/tutor.py frontier [--domain math] [--show-blocked] [--json]
+python3 scripts/tutor.py index [--dry-run]
+python3 scripts/tutor.py record <concept-id> --score 1|0.5|0 [--hints N] [--source REF]
+        [--weight full|half] [--scaffold STAGE] [--transfer] [--project]
+        [--misconception TEXT] [--no-prereq-credit] [--dry-run]
+python3 scripts/tutor.py maps [--domain math] [--dry-run]
+python3 scripts/tutor.py check [--strict]
+python3 scripts/tutor.py lock [--unlock]
+```
+
+It finds your data folder from `CLAUDE.local.md`, or `$TUTOR_DATA`, or `--data DIR`. Add
+`--today YYYY-MM-DD` to any command to see what a given day looks like.
+
+`check` is the one worth running by hand: it lists closed notes that differ from their last
+commit. It reports and never reverts.
+
+### The optional submit watcher
+
+Off by default. With `submit_watcher: true`, `/learn` starts `scripts/watch-submit.sh`
+(`.ps1` on Windows) through Claude Code's Monitor tool, and ticking a `- [ ] Submit` box in
+Obsidian hands the turn back without touching the terminal.
+
+It is built so that it cannot make the system less reliable: Enter always works, the
+watcher only fires on a ticked box, it waits two seconds for Obsidian's autosave, and
+pickup is idempotent because the tutor rewrites the line to `Submitted 14:32` — a second
+trigger finds no ticked box. If it dies, nothing happens and you press Enter. `/learn`
+re-arms it each session, because background monitors do not survive a resumed session.
+
+**It ships disabled on purpose.** The bar it has to clear is 30 submits across 3 real
+sessions with no missed and no duplicate pickups. The mechanism is tested; that run is
+yours to do. Until then, Enter is the only method, and nothing is lost by it.
+
+### Updating the engine
+
+```bash
+cd /path/to/MyVault/.tutor-engine
+git pull
+```
+
+Your data folder is untouched — the engine holds no learning data, and the two files that
+point at it (`CLAUDE.local.md`, `.claude/settings.local.json`) are gitignored. If a pull
+changes `templates/`, existing notes keep their old shape; only new notes use the new one.
+
+### Calibrating after about five sessions
+
+The numbers above are starting values, agreed on October 6 2026, not findings. After about
+five real sessions, check them:
+
+- **Is in-session success landing near 80–85%?** Count correct first attempts across a few
+  sessions. Consistently higher means the levels are too low; consistently lower means the
+  prerequisites are not being checked hard enough. The thresholds live in
+  `.claude/agents/tutor.md` and at the top of `scripts/tutor.py`.
+- **Re-grade one quiz yourself** and compare with the examiner. A systematic difference is
+  worth fixing in `.claude/agents/examiner.md`; a scatter is normal.
+- **Read two sessions for verbosity.** Cut repetition, and restore anything that came out
+  too terse. The voice rules are in `.claude/agents/tutor.md`.
+- **Trim `tutor.md`.** Anything you never saw it use belongs in a skill instead, where it
+  loads only when needed.
+
+### Troubleshooting
+
+| Symptom | Cause and fix |
+| --- | --- |
+| "I cannot access that folder" | The data folder is missing from `additionalDirectories` in `.claude/settings.local.json`. Rerun `/setup`, then restart Claude Code — that file is read at startup. |
+| The tutor is not the active agent | `.claude/settings.json` sets `"agent": "tutor"`. Check you started `claude` inside the engine repo, not the vault root. |
+| Rules from somewhere else are leaking in | Claude Code loads `CLAUDE.md` files from folders above the start directory. If your vault root has one, exclude it with `claudeMdExcludes`. |
+| An edit was blocked and the agent gave up | That is the guard hook working: the note is closed. A regrade belongs in the concept's log; new work belongs in today's note. |
+| A Mermaid diagram renders as an error | Write `broken` in your answer slot and press Enter. The common causes are a dash in a node ID and an unquoted `(` or `\|` in a label. |
+| `tutor.py: No data folder` | Run `/setup`, or pass `--data /path/to/Learning`. |
+| `tutor.py check` reports a change you did not make | A sync conflict, or Obsidian rewriting frontmatter. Compare with `git -C <data folder> diff`. |
+| A commit failed at `/wrap` | Another tool held git's lock. The notes are saved; the next wrap commits them too. |
+| Reviews have piled up | Use `/review` repeatedly rather than `/learn`. The backlog shrinks on its own, because every correct answer lengthens that concept's interval. |
+| A concept is being taught twice under two names | Two concept notes for one idea. Tell the tutor; the cartographer merges them into one with an alias. |

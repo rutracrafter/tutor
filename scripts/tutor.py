@@ -47,10 +47,6 @@ MAP_NODE_BUDGET = 40             # large domains show the frontier and two hops
 MAP_HOPS = 2                     # ...a minimum radius of two hops from it
 MAP_MAX_HOPS = 12                # ...and never more rings than this, for a long chain
 
-DATA_SUBDIRS = ["Learner", "Concepts", "Maps", "Sessions", "Assessments",
-                "Projects", "Workspaces", "Assets", ".keys"]
-
-
 # --------------------------------------------------------------------------- errors
 
 class TutorError(Exception):
