@@ -20,6 +20,7 @@ Commands:
     record     apply a graded observation to a concept
     maps       regenerate Maps/<domain>.md
     check      closed notes changed since their last commit
+    lock       make closed notes read-only (optional, off by default)
 """
 
 import argparse
@@ -822,6 +823,42 @@ def cmd_check(args, ctx):
     return 2 if (changed or untracked) and args.strict else 0
 
 
+def _closed_notes(data_dir):
+    out = []
+    for subdir in ("Sessions", "Assessments"):
+        for path, fm in load_notes(data_dir, subdir):
+            if str(fm.get("status") or "").strip() == "closed":
+                out.append(path)
+    return out
+
+
+def cmd_lock(args, ctx):
+    """Optionally make closed notes read-only at the file-system level.
+
+    Off by default, and git already makes a later edit visible, so this is belt and
+    braces. Some sync services handle read-only files badly — hence the warning rather
+    than making it the default.
+    """
+    data_dir = ctx["data"]
+    notes = _closed_notes(data_dir)
+    if not notes:
+        print("No closed notes yet.")
+        return 0
+    changed = 0
+    for path in notes:
+        mode = os.stat(path).st_mode & 0o777
+        want = mode & ~0o222 if not args.unlock else mode | 0o200
+        if want != mode:
+            os.chmod(path, want)
+            changed += 1
+    verb = "unlocked" if args.unlock else "locked"
+    print("%s %d of %d closed note(s)." % (verb.capitalize(), changed, len(notes)))
+    if not args.unlock and changed:
+        print("Edits to them will no longer save. Turn this off with `tutor.py lock "
+              "--unlock` if your sync service copes badly with read-only files.")
+    return 0
+
+
 # ----------------------------------------------------------------------------- setup
 
 def resolve_data_dir(explicit):
@@ -886,6 +923,10 @@ def build_parser():
     m.add_argument("--domain", help="one domain tag; omit for all")
     m.add_argument("--dry-run", action="store_true")
     m.set_defaults(func=cmd_maps)
+
+    k = sub.add_parser("lock", help="make closed notes read-only (optional, off by default)")
+    k.add_argument("--unlock", action="store_true", help="make them writable again")
+    k.set_defaults(func=cmd_lock)
 
     c = sub.add_parser("check", help="closed notes changed since their last commit")
     c.add_argument("--strict", action="store_true", help="exit 2 if anything changed")
