@@ -128,3 +128,95 @@ One more thing to check: Claude Code also loads `CLAUDE.md` files from folders *
 one it starts in. If your vault root has its own `CLAUDE.md` it joins the tutor's context.
 Make sure it does not contradict the tutor's rules, or exclude it with the
 `claudeMdExcludes` setting.
+
+---
+
+## Quick start
+
+Your first session, in about five minutes.
+
+### 1 · Open two windows
+
+Obsidian on the left, your terminal on the right. You will read in Obsidian and type in
+the terminal, and the note is where everything actually happens.
+
+### 2 · Start a session
+
+```bash
+cd /path/to/MyVault/.tutor-engine
+claude
+```
+
+```text
+/learn probability 30m
+```
+
+The topic is a slug; the budget is optional (`30m`, `45`, `1h`) and defaults to the one in
+your profile. If the topic is new to the system, the tutor will suggest `/diagnose
+probability` first so it can map the prerequisites before teaching over a gap.
+
+A new note appears in `Learning/Sessions/2026-10-06-probability.md`. Open it in Obsidian.
+The plan is at the top. The chat reply is one line — that is deliberate, everything of
+substance is in the note.
+
+### 3 · Answer in the note
+
+Each item looks like this:
+
+```markdown
+## Q1 · conditional-probability · level 2 · scaffold: completion
+> [!tutor]
+> A bag holds 3 red and 2 blue marbles. You draw two without replacement.
+> Write $P(\text{second is red} \mid \text{first was red})$ and explain
+> why the denominator changes.
+
+> [!answer] Your answer
+> 
+```
+
+Type inside the `[!answer]` block. Then, in the terminal, **press Enter on an empty line**
+(or type a single `.`). That means "read the note". The tutor reads what changed, responds
+in the note, and says one line in chat.
+
+You can also just type your answer in the terminal. It gets copied word for word into the
+answer slot, marked `(typed in terminal)`, and handled the same way — nothing you type is
+lost or paraphrased.
+
+### 4 · Steer at the checkpoints
+
+After each phase:
+
+```markdown
+> [!checkpoint] Next: guided practice on bayes-theorem, 3–4 problems · 18 min used of 30
+> - [ ] More practice on what we just did
+> - [ ] Go deeper on something (say what)
+> - [ ] Something else (write below)
+> Leave everything unticked to continue as planned.
+```
+
+Tick nothing and press Enter to continue. "More practice on X" is always granted; "go
+deeper on Y" is granted if you hold Y's prerequisites, and otherwise the tutor shows you
+what is missing and offers a detour. To redirect mid-phase, write a `> [!steer]` callout
+anywhere in the note and press Enter.
+
+### 5 · Wrap up
+
+```text
+/wrap
+```
+
+Any time — two minutes in or at the end. It writes the five-line summary, records what you
+actually demonstrated into the concept graph, lists what you did not finish as carry-over,
+regenerates the maps, closes the note and commits the data folder.
+
+Then close the terminal. The next session starts fresh: `claude`, `/learn <topic>`. All the
+continuity lives in the files.
+
+### Three things that surprise people
+
+- **A right answer gets "why does that work?"** A correct answer for the wrong reason is a
+  miss nobody found yet.
+- **A blank does not get a hint.** It gets an easier sub-question. Hints are for effort you
+  have already shown; two genuine attempts come before any solution.
+- **There is no score.** Results read solid, shaky or gap, each with its next action. The
+  numbers exist inside the model to pick your next question.
