@@ -1,0 +1,10 @@
+# Written by /setup — points the engine at your data folder. Never shared.
+CLAUDE.local.md
+
+# Written by /setup — grants file access to your data folder. Machine-specific.
+.claude/settings.local.json
+
+# Local scratch
+.DS_Store
+__pycache__/
+*.pyc
